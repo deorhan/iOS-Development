@@ -103,6 +103,7 @@ struct ScannedView: View{
             }
         }.onChange(of: isLoading){
             if(!isLoading){
+                print("Recognized Texts: \(recognizedTexts)") //DEBUG
                 var calories = 0.0
                 var divFett = 0.0
                 var ungFett = 0.0
@@ -123,13 +124,13 @@ struct ScannedView: View{
                         }else if(divFett == 0){
                             divFett = getValueOfText(from: text)
                         }
-                    }else if(text.contains("Kohlenhydrate")){
+                    }else if(text.contains("Kohlenhydrate")&&kohlen==0){
                         kohlen = getValueOfText(from: text)
-                    }else if(text.contains("Zucker")){
+                    }else if(text.contains("Zucker")&&zcker==0){
                         zcker = getValueOfText(from: text)
-                    }else if(text.contains("Eiweiß")){
+                    }else if(text.contains("Eiweiß")&&eiweis==0){
                         eiweis = getValueOfText(from: text)
-                    }else if(text.contains("Salz")){
+                    }else if(text.contains("Salz")&&salz==0){
                         salz = getValueOfText(from: text)
                     }
                 }
@@ -140,6 +141,49 @@ struct ScannedView: View{
                     kohlen -= zcker
                 }
                 modelContext.insert(Item(date: calorie.date, calories: calories, divFett: divFett, ungFett: ungFett, gesFett: gesFett, kohlen: kohlen, zcker: zcker, eiweis: eiweis, salz: salz))
+            }
+        }.onDisappear(){
+            for nutrient in nutrients {
+                if(nutrient.name == "diverse Fettsäuern"){
+                    nutrient.value = 0
+                    for item in filteredItems{
+                        nutrient.value += (item.divFett * (item.gramm/100))
+                    }
+                } else if(nutrient.name == "gesättigte Fettsäuern"){
+                    nutrient.value = 0
+                    for item in filteredItems{
+                        nutrient.value += (item.gesFett * (item.gramm/100))
+                    }
+                } else if(nutrient.name == "ungesättigte Fettsäuren"){
+                    nutrient.value = 0
+                    for item in filteredItems{
+                        nutrient.value += (item.ungFett * (item.gramm/100))
+                    }
+                } else if(nutrient.name == "Kohlenhydrate"){
+                    nutrient.value = 0
+                    for item in filteredItems{
+                        nutrient.value += (item.kohlen * (item.gramm/100))
+                    }
+                } else if(nutrient.name == "Zucker"){
+                    nutrient.value = 0
+                    for item in filteredItems{
+                        nutrient.value += (item.zcker * (item.gramm/100))
+                    }
+                } else if(nutrient.name == "Eiweiß"){
+                    nutrient.value = 0
+                    for item in filteredItems{
+                        nutrient.value += (item.eiweis * (item.gramm/100))
+                    }
+                } else if(nutrient.name == "Salz"){
+                    nutrient.value = 0
+                    for item in filteredItems{
+                        nutrient.value += (item.salz * (item.gramm/100))
+                    }
+                }
+            }
+            calorie.calories = 0
+            for item in filteredItems{
+                calorie.calories += (item.calories  * (item.gramm/100))
             }
         }
     }
@@ -161,7 +205,7 @@ struct ScannedView: View{
                     })
             
             //extract data
-            for observation in observations {
+            for observation in sortedObservations {
                 let recognizedText = observation.topCandidates(1).first!.string
                 let nutrientNames = ["Fett", "Eiweiß", "Kohlenhydrate", "Zucker", "Salz", "Energie"]
                 if nutrientNames.contains(recognizedText) {
@@ -174,6 +218,7 @@ struct ScannedView: View{
                         }
                     }
                 }
+                
             }
         }
 
@@ -231,23 +276,28 @@ struct ItemView : View {
                 TextField(
                     "Namen eingeben",
                     text: $name
-                ).onSubmit {
-                    item.name = name
-                }
+                )
             } else {
                 Text("\(item.name):")
             }
             TextField(
                 "\(String(format: "%.1f", item.gramm)) g",
                 text: $gramm
-            ).keyboardType(.decimalPad).onSubmit{
-                    let numberFormatter = NumberFormatter()
-                    numberFormatter.numberStyle = .decimal
-                    if let number = numberFormatter.number(from: gramm) {
-                        item.gramm = number.doubleValue
-                    } else {
-                        gramm = "\(item.gramm)"
-                    }
+            ).keyboardType(.decimalPad).onChange(of: gramm, { oldValue, newValue in
+                let numberFormatter = NumberFormatter()
+                numberFormatter.numberStyle = .decimal
+                if numberFormatter.number(from: gramm) == nil {
+                    gramm = "\(item.gramm)"
+                }
+            })
+        }.onDisappear(){
+            if(item.name == "???" && name != ""){
+                item.name = name
+            }
+            let numberFormatter = NumberFormatter()
+            numberFormatter.numberStyle = .decimal
+            if let number = numberFormatter.number(from: gramm) {
+                item.gramm = number.doubleValue
             }
         }
     }
