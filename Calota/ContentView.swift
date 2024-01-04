@@ -90,17 +90,19 @@ struct ScannedView: View{
             List(filteredItems.reversed()){item in
                 ItemView(item: item)
             }
-            Button(action: {
-                self.isImagePickerPresented = true
-            }, label: {
-                Text("Eintrag Hinzufügen")
-            })
-            .sheet(isPresented: $isImagePickerPresented, onDismiss: {
-                if let image = self.imageTaken {
-                    self.recognizedText(from: image)
+            if(calorie.date == DateFormatter.localizedString(from: Date.now, dateStyle: DateFormatter.Style.long, timeStyle: .none)){
+                Button(action: {
+                    self.isImagePickerPresented = true
+                }, label: {
+                    Text("Eintrag Hinzufügen")
+                })
+                .sheet(isPresented: $isImagePickerPresented, onDismiss: {
+                    if let image = self.imageTaken {
+                        self.recognizedText(from: image)
+                    }
+                }) {
+                    ImagePicker(image: self.$imageTaken)
                 }
-            }) {
-                ImagePicker(image: self.$imageTaken)
             }
         }.onChange(of: isLoading){
             if(!isLoading){
