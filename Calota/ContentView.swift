@@ -76,6 +76,7 @@ struct ScannedView: View{
     
     @State private var imageTaken: UIImage?
     @State private var recognizedTexts = [String]()
+    @State private var allTexts = [String]()
     @State private var isLoading = false
     @State private var isImagePickerPresented = false
     @State private var name : String?
@@ -103,6 +104,7 @@ struct ScannedView: View{
             }
         }.onChange(of: isLoading){
             if(!isLoading){
+                print("All Texts: \(allTexts)") //DEBUG
                 print("Recognized Texts: \(recognizedTexts)") //DEBUG
                 var calories = 0.0
                 var divFett = 0.0
@@ -115,7 +117,7 @@ struct ScannedView: View{
                 for text in recognizedTexts{
                     //Calories
                     if(text.contains("Energie")&&calories==0){
-                        calories = Double(text[text.range(of: "##VALUE##")!.upperBound...][text[text.range(of: "##VALUE##")!.upperBound...].range(of: "/")!.upperBound...].filter { $0.isNumber })!
+                        calories = Double(text[text.range(of: "##VALUE##")!.upperBound...][text[text.range(of: "##VALUE##")!.upperBound...].range(of: "/")!.lowerBound...].replacingOccurrences(of: ",", with: ".").replacingOccurrences(of: #"[^0-9.]+"#, with: "", options: .regularExpression))! * 0.2390057
                     }else if(text.contains("Fett")){
                         if(text.contains("ungesättigt")){
                             continue;
@@ -189,7 +191,7 @@ struct ScannedView: View{
     }
     
     private func getValueOfText(from text: String) -> Double {
-        return Double(text[text.range(of: "##VALUE##")!.upperBound...].filter { $0.isNumber })!
+        return Double(text[text.range(of: "##VALUE##")!.upperBound...].replacingOccurrences(of: ",", with: ".").replacingOccurrences(of: #"[^0-9.]+"#, with: "", options: .regularExpression))!
     }
     
     private func recognizedText(from image: UIImage) {
@@ -203,22 +205,39 @@ struct ScannedView: View{
             let sortedObservations = observations.sorted(by: { (observation1, observation2) -> Bool in
                         return observation1.boundingBox.midX < observation2.boundingBox.midX
                     })
-            
-            //extract data
+            //get kj first and calculate the likeable offset with it, since it exists only once
+            var xoffset = 0
+            var yoffset = 0
             for observation in sortedObservations {
                 let recognizedText = observation.topCandidates(1).first!.string
-                let nutrientNames = ["Fett", "Eiweiß", "Kohlenhydrate", "Zucker", "Salz", "Energie"]
-                if nutrientNames.contains(recognizedText) {
-                    for valueObs in observations {
-                        if(valueObs.boundingBox.midY < observation.boundingBox.maxY && valueObs.boundingBox.midY > observation.boundingBox.minY && valueObs.boundingBox.minX > observation.boundingBox.maxX){
-                            let recognizedTextValue = valueObs.topCandidates(1).first!.string
-                            if(recognizedTextValue.contains("g")||recognizedTextValue.contains("kcal")){
-                                self.recognizedTexts.append(recognizedText+"##VALUE##"+recognizedTextValue)
-                            }
+                if(recognizedText.contains("Energie")){
+                    for valueObs in observation {
+                        if(valueObs.topCandidates(1).first!.string.contains("kJ")){
+                            self.recognizedTexts.append(recognizedText+"##VALUE##"+recognizedTextValue)
+                            xoffset = valueObs.boundingBox.minX - observation.boundingBox.minX
+                            yoffset = valueObs.boundingBox.minY - observation.boundingBox.minY
+                            print("xoffset = \(xoffset) yoffset = \(yoffset)") //DEBUG
                         }
                     }
                 }
-                
+            }
+            //extract data
+            for observation in sortedObservations {
+                let recognizedText = observation.topCandidates(1).first!.string
+                self.allTexts.append(recognizedText)
+                if (recognizedText.contains("Fett")||recognizedText.contains("Eiweiß")||recognizedText.contains("Kohlenhydrate")||recognizedText.contains("Zucker")||recognizedText.contains("Salz")) {
+                    var distance = Int.max
+                    var match = observation
+                    for valueObs in observations {
+                        if(pow(valueObs.boundingBox.minX-(observation.boundingBox.minX+xoffset),2)+pow(valueObs.boundingBox.minY-(observation.boundingBox.minY+yoffset),2)<distance){
+                            distance = pow(valueObs.boundingBox.minX-(observation.boundingBox.minX+xoffset),2)+pow(valueObs.boundingBox.minY-(observation.boundingBox.minY+yoffset),2)
+                            match = valueObs
+                        }
+                    }
+                    let recognizedTextValue = match.topCandidates(1).first!.string
+                    print("recognizedTextValue = \(recognizedTextValue)") //DEBUG
+                    self.recognizedTexts.append(recognizedText+"##VALUE##"+recognizedTextValue)
+                }
             }
         }
 
