@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import SwiftUI
 
 @Model
 final class Item: Identifiable{
@@ -15,7 +16,9 @@ final class Item: Identifiable{
     var zcker: Double
     var eiweis: Double
     var salz: Double
-    init(date: String, calories: Double, divFett: Double, ungFett: Double, gesFett: Double, kohlen: Double, zcker: Double, eiweis: Double, salz: Double) {
+    var image: Data?
+    
+    init(date: String, calories: Double, divFett: Double, ungFett: Double, gesFett: Double, kohlen: Double, zcker: Double, eiweis: Double, salz: Double, image: UIImage? = nil) {
         self.date = date
         self.calories = calories
         self.divFett = divFett
@@ -25,5 +28,13 @@ final class Item: Identifiable{
         self.zcker = zcker
         self.eiweis = eiweis
         self.salz = salz
+        if let image = image {self.image = image.pngData()}
+    }
+    
+    func getImage() -> UIImage? {
+        if let imageData = image {
+            return UIImage(data: imageData)
+        }
+        return nil
     }
 }

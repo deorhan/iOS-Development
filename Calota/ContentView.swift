@@ -143,7 +143,7 @@ struct ScannedView: View{
                 if(zcker != 0){
                     kohlen -= zcker
                 }
-                modelContext.insert(Item(date: calorie.date, calories: calories, divFett: divFett, ungFett: ungFett, gesFett: gesFett, kohlen: kohlen, zcker: zcker, eiweis: eiweis, salz: salz))
+                modelContext.insert(Item(date: calorie.date, calories: calories, divFett: divFett, ungFett: ungFett, gesFett: gesFett, kohlen: kohlen, zcker: zcker, eiweis: eiweis, salz: salz, image: imageTaken))
             }
         }.onDisappear(){
             for nutrient in nutrients {
@@ -295,6 +295,11 @@ struct ItemView : View {
     @State private var name = ""
     var body: some View {
         HStack(spacing: 20) {
+            if let uiImage = item.getImage() {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFit()
+            }
             if(item.name == "???"){
                 TextField(
                     "Namen eingeben",
