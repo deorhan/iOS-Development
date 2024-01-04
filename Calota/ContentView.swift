@@ -48,7 +48,7 @@ struct DailyView: View{
     
     var body: some View{
         VStack(spacing: 20) {
-            Text("Calories: \(String(format: "%.2f", calorie.calories))").font(.system(size: 30, weight: .bold, design: .default)).foregroundColor(Color.black).padding().background(RoundedRectangle(cornerRadius: 10).fill(Color.white).shadow(color: Color.gray.opacity(0.4), radius: 4, x: 0, y: 2))
+            Text("Calories: \(String(format: "%.1f", calorie.calories))").font(.system(size: 30, weight: .bold, design: .default)).foregroundColor(Color.black).padding().background(RoundedRectangle(cornerRadius: 10).fill(Color.white).shadow(color: Color.gray.opacity(0.4), radius: 4, x: 0, y: 2))
             Chart{
                 ForEach(filteredNutrients){ nutrient in
                     SectorMark(angle: .value("Gramm",nutrient.value), innerRadius: .ratio(0.6), angularInset: 2).foregroundStyle(by: .value("Nährstoffe",nutrient.name)).cornerRadius(4)
@@ -116,12 +116,12 @@ struct ScannedView: View{
                 var salz = 0.0
                 for text in recognizedTexts{
                     //Calories
-                    if(text.contains("Energie")&&calories==0){
-                        calories = Double(text[text.range(of: "##VALUE##")!.upperBound...][text[text.range(of: "##VALUE##")!.upperBound...].range(of: "/")!.lowerBound...].replacingOccurrences(of: ",", with: ".").replacingOccurrences(of: #"[^0-9.]+"#, with: "", options: .regularExpression))! * 0.2390057
+                    if((text.contains("Energie")||text.contains("Brennwert"))&&calories==0){
+                        calories = (Double(text[text.range(of: "##VALUE##")!.upperBound...].prefix(upTo: text[text.range(of: "##VALUE##")!.upperBound...].range(of: "kJ")?.lowerBound ?? text[text.range(of: "##VALUE##")!.upperBound...].endIndex).replacingOccurrences(of: ",", with: ".").replacingOccurrences(of: #"[^0-9.]+"#, with: "", options: .regularExpression)) ?? 0) * 0.2390057
                     }else if(text.contains("Fett")){
                         if(text.contains("ungesättigt")){
                             continue;
-                        }else if(text.contains("gesättigt")&&gesFett == 0){
+                        }else if((text.contains("gesättigt")||text.contains("Fettsäuren"))&&gesFett == 0){
                             gesFett = getValueOfText(from: text)
                         }else if(divFett == 0){
                             divFett = getValueOfText(from: text)
@@ -138,6 +138,7 @@ struct ScannedView: View{
                 }
                 if(divFett != 0 && gesFett != 0){
                     ungFett = divFett - gesFett
+                    divFett = 0
                 }
                 if(zcker != 0){
                     kohlen -= zcker
@@ -191,7 +192,8 @@ struct ScannedView: View{
     }
     
     private func getValueOfText(from text: String) -> Double {
-        return Double(text[text.range(of: "##VALUE##")!.upperBound...].replacingOccurrences(of: ",", with: ".").replacingOccurrences(of: #"[^0-9.]+"#, with: "", options: .regularExpression))!
+        
+        return Double(text[text.range(of: "##VALUE##")!.upperBound...].replacingOccurrences(of: ",", with: ".").dropLast().replacingOccurrences(of: #"[^0-9.]+"#, with: "", options: .regularExpression)) ?? 0
     }
     
     private func recognizedText(from image: UIImage) {
@@ -206,17 +208,19 @@ struct ScannedView: View{
                         return observation1.boundingBox.midX < observation2.boundingBox.midX
                     })
             //get kj first and calculate the likeable offset with it, since it exists only once
-            var xoffset = 0
-            var yoffset = 0
+            var xoffset = 0.0
+            var yoffset = 0.0
             for observation in sortedObservations {
                 let recognizedText = observation.topCandidates(1).first!.string
-                if(recognizedText.contains("Energie")){
-                    for valueObs in observation {
+                if(recognizedText.contains("Energie")||recognizedText.contains("Brennwert")){
+                    for valueObs in sortedObservations {
                         if(valueObs.topCandidates(1).first!.string.contains("kJ")){
+                            let recognizedTextValue = valueObs.topCandidates(1).first!.string
                             self.recognizedTexts.append(recognizedText+"##VALUE##"+recognizedTextValue)
-                            xoffset = valueObs.boundingBox.minX - observation.boundingBox.minX
+                            xoffset = valueObs.boundingBox.maxX - observation.boundingBox.minX
                             yoffset = valueObs.boundingBox.minY - observation.boundingBox.minY
                             print("xoffset = \(xoffset) yoffset = \(yoffset)") //DEBUG
+                            break;
                         }
                     }
                 }
@@ -226,11 +230,11 @@ struct ScannedView: View{
                 let recognizedText = observation.topCandidates(1).first!.string
                 self.allTexts.append(recognizedText)
                 if (recognizedText.contains("Fett")||recognizedText.contains("Eiweiß")||recognizedText.contains("Kohlenhydrate")||recognizedText.contains("Zucker")||recognizedText.contains("Salz")) {
-                    var distance = Int.max
+                    var distance = 100000.0
                     var match = observation
                     for valueObs in observations {
-                        if(pow(valueObs.boundingBox.minX-(observation.boundingBox.minX+xoffset),2)+pow(valueObs.boundingBox.minY-(observation.boundingBox.minY+yoffset),2)<distance){
-                            distance = pow(valueObs.boundingBox.minX-(observation.boundingBox.minX+xoffset),2)+pow(valueObs.boundingBox.minY-(observation.boundingBox.minY+yoffset),2)
+                        if(pow(valueObs.boundingBox.maxX-(observation.boundingBox.minX+xoffset),2)+pow(valueObs.boundingBox.minY-(observation.boundingBox.minY+yoffset),2)<distance){
+                            distance = pow(valueObs.boundingBox.maxX-(observation.boundingBox.minX+xoffset),2)+pow(valueObs.boundingBox.minY-(observation.boundingBox.minY+yoffset),2)
                             match = valueObs
                         }
                     }
