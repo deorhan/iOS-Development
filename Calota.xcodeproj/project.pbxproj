@@ -7,22 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		84C05B392B4B07620079DFDC /* Nutrient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C05B382B4B07620079DFDC /* Nutrient.swift */; };
+		84C4A1A22B443B48006E06B1 /* Calories.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C4A1A12B443B48006E06B1 /* Calories.swift */; };
 		E34185F52B4414100077F89E /* CalotaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34185F42B4414100077F89E /* CalotaApp.swift */; };
 		E34185F72B4414100077F89E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34185F62B4414100077F89E /* ContentView.swift */; };
 		E34185F92B4414110077F89E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E34185F82B4414110077F89E /* Assets.xcassets */; };
 		E34185FC2B4414120077F89E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E34185FB2B4414120077F89E /* Preview Assets.xcassets */; };
-		E34185FE2B4414120077F89E /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34185FD2B4414120077F89E /* Persistence.swift */; };
-		E34186012B4414120077F89E /* Calota.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = E34185FF2B4414120077F89E /* Calota.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		84C05B382B4B07620079DFDC /* Nutrient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nutrient.swift; sourceTree = "<group>"; };
+		84C4A1A12B443B48006E06B1 /* Calories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calories.swift; sourceTree = "<group>"; };
 		E34185F12B4414100077F89E /* Calota.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Calota.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E34185F42B4414100077F89E /* CalotaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalotaApp.swift; sourceTree = "<group>"; };
 		E34185F62B4414100077F89E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E34185F82B4414110077F89E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E34185FB2B4414120077F89E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		E34185FD2B4414120077F89E /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
-		E34186002B4414120077F89E /* Calota.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Calota.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,9 +58,9 @@
 				E34185F42B4414100077F89E /* CalotaApp.swift */,
 				E34185F62B4414100077F89E /* ContentView.swift */,
 				E34185F82B4414110077F89E /* Assets.xcassets */,
-				E34185FD2B4414120077F89E /* Persistence.swift */,
-				E34185FF2B4414120077F89E /* Calota.xcdatamodeld */,
 				E34185FA2B4414120077F89E /* Preview Content */,
+				84C4A1A12B443B48006E06B1 /* Calories.swift */,
+				84C05B382B4B07620079DFDC /* Nutrient.swift */,
 			);
 			path = Calota;
 			sourceTree = "<group>";
@@ -101,7 +101,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1510;
 				TargetAttributes = {
 					E34185F02B4414100077F89E = {
 						CreatedOnToolsVersion = 14.3.1;
@@ -143,10 +143,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E34185FE2B4414120077F89E /* Persistence.swift in Sources */,
+				84C4A1A22B443B48006E06B1 /* Calories.swift in Sources */,
+				84C05B392B4B07620079DFDC /* Nutrient.swift in Sources */,
 				E34185F72B4414100077F89E /* ContentView.swift in Sources */,
 				E34185F52B4414100077F89E /* CalotaApp.swift in Sources */,
-				E34186012B4414120077F89E /* Calota.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -189,6 +189,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -249,6 +250,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -282,6 +284,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -310,6 +313,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -345,19 +349,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		E34185FF2B4414120077F89E /* Calota.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				E34186002B4414120077F89E /* Calota.xcdatamodel */,
-			);
-			currentVersion = E34186002B4414120077F89E /* Calota.xcdatamodel */;
-			path = Calota.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = E34185E92B4414100077F89E /* Project object */;
 }

@@ -1,88 +1,62 @@
-//
-//  ContentView.swift
-//  Calota
-//
-//  Created by Deniz Orhan on 02.01.24.
-//
-
 import SwiftUI
-import CoreData
+import SwiftData
+import Charts
 
 struct ContentView: View {
-    @Environment(\.managedObjectContext) private var viewContext
-
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
+    
+    @Environment(\.modelContext) private var modelContext
+    @Query
+    var calories: [Calories]
 
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(items) { item in
+        NavigationView{
+            List{
+                ForEach(calories){ calorie in
                     NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
-                    }
-                }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+                        DailyView(calorie: calorie)
+                    } label : {
+                        Text(
+                            "\(calorie.date) | Calories: \(String(format: "%.2f", calorie.calories))"
+                        )
                     }
                 }
             }
-            Text("Select an item")
+        }.onAppear {
+            updateView()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            updateView()
         }
     }
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
+    private func updateView() {
+        if (!calories.contains { calorie in
+            return calorie.date == DateFormatter.localizedString(from: Date.now, dateStyle: DateFormatter.Style.long, timeStyle: .none)
+        }) {
+            modelContext.insert(Calories())
         }
     }
 }
 
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+struct DailyView: View{
+    var calorie: Calories
+    
+    var body: some View{
+        VStack(spacing: 80) {
+            Spacer()
+            Text("Calories: \(String(format: "%.2f", calorie.calories))").font(.system(size: 28, weight: .bold, design: .default)).foregroundColor(Color.black).padding().background(
+                                RoundedRectangle(cornerRadius: 10).fill(Color.white).shadow(color: Color.gray.opacity(0.4), radius: 4, x: 0, y: 2)
+                            )
+            Spacer()
+            Chart{
+                ForEach(calorie.nutrients){ nutrient in
+                    SectorMark(angle: .value("Gramm",nutrient.value), innerRadius: .ratio(0.6), angularInset: 4).foregroundStyle(by: .value("Nährstoffe",nutrient.name)).cornerRadius(4)
+                }
+            }
+            Spacer()
+            List(calorie.nutrients){nutrient in
+                Text("\(nutrient.name): \(String(format: "%.2f", nutrient.value))g")
+            }
+        }
     }
 }
