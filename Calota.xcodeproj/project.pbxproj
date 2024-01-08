@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		84C05B392B4B07620079DFDC /* Nutrient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C05B382B4B07620079DFDC /* Nutrient.swift */; };
+		84C05B3B2B4C19870079DFDC /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C05B3A2B4C19870079DFDC /* Item.swift */; };
 		84C4A1A22B443B48006E06B1 /* Calories.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84C4A1A12B443B48006E06B1 /* Calories.swift */; };
 		E34185F52B4414100077F89E /* CalotaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34185F42B4414100077F89E /* CalotaApp.swift */; };
 		E34185F72B4414100077F89E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E34185F62B4414100077F89E /* ContentView.swift */; };
@@ -17,6 +18,7 @@
 
 /* Begin PBXFileReference section */
 		84C05B382B4B07620079DFDC /* Nutrient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nutrient.swift; sourceTree = "<group>"; };
+		84C05B3A2B4C19870079DFDC /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		84C4A1A12B443B48006E06B1 /* Calories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calories.swift; sourceTree = "<group>"; };
 		E34185F12B4414100077F89E /* Calota.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Calota.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E34185F42B4414100077F89E /* CalotaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalotaApp.swift; sourceTree = "<group>"; };
@@ -61,6 +63,7 @@
 				E34185FA2B4414120077F89E /* Preview Content */,
 				84C4A1A12B443B48006E06B1 /* Calories.swift */,
 				84C05B382B4B07620079DFDC /* Nutrient.swift */,
+				84C05B3A2B4C19870079DFDC /* Item.swift */,
 			);
 			path = Calota;
 			sourceTree = "<group>";
@@ -143,6 +146,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84C05B3B2B4C19870079DFDC /* Item.swift in Sources */,
 				84C4A1A22B443B48006E06B1 /* Calories.swift in Sources */,
 				84C05B392B4B07620079DFDC /* Nutrient.swift in Sources */,
 				E34185F72B4414100077F89E /* ContentView.swift in Sources */,

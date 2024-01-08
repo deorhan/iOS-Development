@@ -4,6 +4,8 @@ import SwiftData
 var sharedModelContainer: ModelContainer = {
     let schema = Schema([
         Calories.self,
+        Nutrient.self,
+        Item.self
     ])
     let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
     do{
